@@ -1,11 +1,14 @@
 /* eslint-disable camelcase */
 import {Component} from 'react'
+import Cookies from 'js-cookie'
 import Popup from 'reactjs-popup'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormControl from '@mui/material/FormControl'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import TextField from '@mui/material/TextField'
 import TaskManagementContext from '../../Context/taskManageContext'
 
 import 'reactjs-popup/dist/index.css'
@@ -13,13 +16,69 @@ import 'reactjs-popup/dist/index.css'
 import './index.css'
 
 class DetailedTaskPopup extends Component {
+  state = {
+    editValues: false,
+    adminsList: [],
+    allProfilesList: [],
+  }
+
+  enableEditing = () => {
+    this.setState(
+      {
+        editValues: true,
+      },
+      this.getAllUsersDetails,
+    )
+  }
+
+  disableEditing = () => {
+    this.setState(
+      {
+        editValues: false,
+      },
+      this.getAllUsersDetails,
+    )
+  }
+
+  getAllUsersDetails = async () => {
+    const userDetails = JSON.parse(Cookies.get('user_details_task_management'))
+    const {jwtToken} = userDetails
+
+    const url = `https://task-management-l5o7.onrender.com/profiles/`
+    const options = {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    }
+
+    const response = await fetch(url, options)
+    const data = await response.json()
+    const responseAllProfilesList = data.returnResponse
+
+    const adminUsernameList = responseAllProfilesList.filter(
+      each => each.is_admin === 1,
+    )
+
+    const adminsList = adminUsernameList.map(each => ({label: each.username}))
+    const allProfilesList = responseAllProfilesList.map(each => ({
+      label: each.username,
+    }))
+
+    this.setState({
+      adminsList,
+      allProfilesList,
+    })
+  }
+
   render() {
-    const {taskId} = this.props
+    const {taskId, givenTasksList} = this.props
+    const {editValues, allProfilesList, adminsList} = this.state
+
     return (
       <TaskManagementContext.Consumer>
         {value => {
           const {
-            myTasksList,
             detailedTitle,
             detailedDescription,
             detailedAssigned_by,
@@ -30,6 +89,13 @@ class DetailedTaskPopup extends Component {
             getCompleteTaskDetails,
             updateTaskStatus,
             updateTaskStatusInDB,
+            updateTaskDetailsInDB,
+            updateDetailedTitle,
+            updateDetailedDescription,
+            updateAssignedBy,
+            updateAssignedTo,
+            updateAssignedDate,
+            updateDeadLine,
           } = value
           return (
             <div className="popup-container">
@@ -39,7 +105,7 @@ class DetailedTaskPopup extends Component {
                   <button type="button" className="transparent-button">
                     <KeyboardArrowRightIcon
                       onClick={() =>
-                        getCompleteTaskDetails(myTasksList, taskId)
+                        getCompleteTaskDetails(givenTasksList, taskId)
                       }
                       sx={{cursor: 'pointer'}}
                     />
@@ -49,32 +115,128 @@ class DetailedTaskPopup extends Component {
                 {close => (
                   <>
                     <div>
-                      <h3>Task Details</h3>
+                      <div className="detail-task-head-container">
+                        <h3>Task Details</h3>
+                        {!editValues && (
+                          <EditOutlinedIcon
+                            sx={{cursor: 'pointer'}}
+                            onClick={this.enableEditing}
+                          />
+                        )}
+                      </div>
                       <table>
                         <tbody>
                           <tr>
                             <td className="attributes">Title</td>
-                            <td>: {detailedTitle}</td>
+                            {editValues ? (
+                              <td>
+                                <TextField
+                                  id="standard-basic"
+                                  variant="standard"
+                                  value={detailedTitle}
+                                  onChange={updateDetailedTitle}
+                                  sx={{width: '100%'}}
+                                />
+                              </td>
+                            ) : (
+                              <td>: {detailedTitle}</td>
+                            )}
                           </tr>
                           <tr>
                             <td className="attributes">Description</td>
-                            <td>: {detailedDescription}</td>
+                            {editValues ? (
+                              <td>
+                                <TextField
+                                  id="standard-basic"
+                                  variant="standard"
+                                  value={detailedDescription}
+                                  onChange={updateDetailedDescription}
+                                  sx={{width: '100%', marginTop: 1}}
+                                />
+                              </td>
+                            ) : (
+                              <td>: {detailedDescription}</td>
+                            )}
                           </tr>
                           <tr>
                             <td className="attributes">Assigned By</td>
-                            <td>: {detailedAssigned_by}</td>
+                            {editValues ? (
+                              <td>
+                                <select
+                                  className="detailed-assigned-to"
+                                  name="assigned_by"
+                                  value={detailedAssigned_by}
+                                  onChange={updateAssignedBy}
+                                >
+                                  {adminsList.map(each => (
+                                    <option
+                                      key={each.label}
+                                      value={each.label}
+                                      className="detailed-assigned-to"
+                                    >
+                                      {each.label}
+                                    </option>
+                                  ))}
+                                </select>
+                              </td>
+                            ) : (
+                              <td>: {detailedAssigned_by}</td>
+                            )}
                           </tr>
                           <tr>
                             <td className="attributes">Assigned To</td>
-                            <td>: {detailedAssigned_to}</td>
+                            {editValues ? (
+                              <td>
+                                <select
+                                  className="detailed-assigned-to"
+                                  name="assigned_to"
+                                  value={detailedAssigned_to}
+                                  onChange={updateAssignedTo}
+                                >
+                                  {allProfilesList.map(each => (
+                                    <option
+                                      key={each.label}
+                                      value={each.label}
+                                      className="detailed-assigned-to"
+                                    >
+                                      {each.label}
+                                    </option>
+                                  ))}
+                                </select>
+                              </td>
+                            ) : (
+                              <td>: {detailedAssigned_to}</td>
+                            )}
                           </tr>
                           <tr>
                             <td className="attributes">Assigned Date</td>
-                            <td>: {detailedAssigned_date}</td>
+                            {editValues ? (
+                              <td>
+                                <input
+                                  className="date-input"
+                                  type="date"
+                                  value={detailedAssigned_date}
+                                  onChange={updateAssignedDate}
+                                />
+                              </td>
+                            ) : (
+                              <td>: {detailedAssigned_date}</td>
+                            )}
                           </tr>
                           <tr>
                             <td className="attributes">Deadline</td>
-                            <td>: {detailedDeadline}</td>
+                            {editValues ? (
+                              <td>
+                                <input
+                                  className="date-input"
+                                  type="date"
+                                  value={detailedDeadline}
+                                  onChange={updateDeadLine}
+                                />
+                              </td>
+                            ) : (
+                              <td>: {detailedDeadline}</td>
+                            )}
                           </tr>
                           <tr>
                             <td className="attributes">Task Status</td>
@@ -112,14 +274,21 @@ class DetailedTaskPopup extends Component {
                     <button
                       type="button"
                       className="no-button"
-                      onClick={() => close()}
+                      onClick={() => {
+                        close()
+                        this.disableEditing()
+                      }}
                     >
                       Close
                     </button>
                     <button
                       type="button"
                       className="trigger-button"
-                      onClick={() => updateTaskStatusInDB(taskId)}
+                      onClick={() => {
+                        close()
+                        updateTaskStatusInDB(taskId)
+                        updateTaskDetailsInDB(taskId)
+                      }}
                     >
                       Update
                     </button>

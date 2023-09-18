@@ -13,7 +13,7 @@
   flex-direction: row;
   align-items: center;
   cursor: pointer;
-  padding-left: 10px;
+  padding-left: 4px;
   flex-wrap: wrap;
   margin: auto;
   transition: 0.5s;

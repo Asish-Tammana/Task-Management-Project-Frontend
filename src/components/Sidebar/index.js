@@ -34,7 +34,7 @@ class Sidebar extends Component {
 
                 const activeTabStyle = each.tabId === activeTab && 'active-tab'
 
-                if (each.tabId !== 'MANAGEUSERS') {
+                if (each.tabId !== 'MANAGEUSERS' && each.tabId !== 'ALLTASKS') {
                   output = (
                     <Link
                       to={each.to}
@@ -46,7 +46,10 @@ class Sidebar extends Component {
                       <p>{each.display}</p>
                     </Link>
                   )
-                } else if (each.tabId === 'MANAGEUSERS' && is_admin === 1) {
+                } else if (
+                  (each.tabId === 'MANAGEUSERS' || each.tabId === 'ALLTASKS') &&
+                  is_admin === 1
+                ) {
                   output = (
                     <Link
                       to={each.to}

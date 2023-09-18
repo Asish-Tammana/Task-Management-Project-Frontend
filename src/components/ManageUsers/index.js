@@ -80,10 +80,10 @@ class ManageUsers extends Component {
           }}
           className="dashboard"
         >
-          <Box sx={{width: '20%'}}>
+          <Box sx={{width: '16%', minHeight: '100vh'}}>
             <Sidebar />
           </Box>
-          <Box sx={{padding: 2, width: '80%', paddingTop: 10}}>
+          <Box sx={{padding: 2, width: '84%', paddingTop: 10}}>
             <h1 style={{color: 'white'}}>Manage Users</h1>
             <Box
               sx={{

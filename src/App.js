@@ -5,13 +5,15 @@ import Cookies from 'js-cookie'
 import {Route, Switch, withRouter, Redirect} from 'react-router-dom'
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
 import FormatListNumberedRoundedIcon from '@mui/icons-material/FormatListNumberedRounded'
-import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded'
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
+import AssignmentIcon from '@mui/icons-material/Assignment'
 import PersonIcon from '@mui/icons-material/Person'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
 import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './components/Dashboard'
 import Tasks from './components/TasksPage'
+import AllTasksPage from './components/AllTasksPage'
 import Profile from './components/Profile'
 import ManageUsers from './components/ManageUsers'
 import NotFound from './components/NotFound'
@@ -32,8 +34,14 @@ const sidebarNavItems = [
     tabId: 'TASKS',
   },
   {
+    display: 'All Tasks',
+    icon: <AssignmentIcon />,
+    to: '/all-tasks',
+    tabId: 'ALLTASKS',
+  },
+  {
     display: 'Manage Users',
-    icon: <PeopleRoundedIcon />,
+    icon: <ManageAccountsIcon />,
     to: '/manage-users',
     tabId: 'MANAGEUSERS',
   },
@@ -60,6 +68,7 @@ class App extends Component {
     in_progressTasks: 0,
     doneTasks: 0,
     myTasksList: [],
+    allTasksList: [],
     detailedTitle: null,
     detailedDescription: null,
     detailedAssigned_by: null,
@@ -94,9 +103,51 @@ class App extends Component {
     })
   }
 
-  getCompleteTaskDetails = async (myTasksList, taskId) => {
-    const taskObjIndex = myTasksList.findIndex(each => each.id === taskId)
-    const taskObj = myTasksList[taskObjIndex]
+  updateDetailedTitle = event => {
+    console.log(event.target.value)
+    this.setState({
+      detailedTitle: event.target.value,
+    })
+  }
+
+  updateDetailedDescription = event => {
+    console.log(event.target.value)
+    this.setState({
+      detailedDescription: event.target.value,
+    })
+  }
+
+  updateAssignedBy = event => {
+    console.log(event.target.value)
+    this.setState({
+      detailedAssigned_by: event.target.value,
+    })
+  }
+
+  updateAssignedTo = event => {
+    console.log(event.target.value)
+    this.setState({
+      detailedAssigned_to: event.target.value,
+    })
+  }
+
+  updateAssignedDate = event => {
+    console.log(event.target.value)
+    this.setState({
+      detailedAssigned_date: event.target.value,
+    })
+  }
+
+  updateDeadLine = event => {
+    console.log(event.target.value)
+    this.setState({
+      detailedDeadline: event.target.value,
+    })
+  }
+
+  getCompleteTaskDetails = async (givenTasksList, taskId) => {
+    const taskObjIndex = givenTasksList.findIndex(each => each.id === taskId)
+    const taskObj = givenTasksList[taskObjIndex]
 
     this.setState({
       detailedTitle: taskObj.title,
@@ -138,6 +189,69 @@ class App extends Component {
 
     const response = await fetch(url, options)
     const data = await response.json()
+    this.getAllTasks()
+    this.getMyTasks()
+  }
+
+  updateTaskDetailsInDB = async taskId => {
+    const {
+      detailedTitle,
+      detailedDescription,
+      detailedAssigned_by,
+      detailedAssigned_to,
+      detailedAssigned_date,
+      detailedDeadline,
+      detailedTask_status,
+    } = this.state
+
+    const url = `https://task-management-l5o7.onrender.com/updateTaskDetails/${taskId}/`
+
+    const userDetails = JSON.parse(Cookies.get('user_details_task_management'))
+    const {jwtToken, loggedInUserDetails} = userDetails
+
+    const reqBody = {
+      title: detailedTitle,
+      description: detailedDescription,
+      assigned_date: detailedAssigned_date,
+      assigned_by: detailedAssigned_by,
+      assigned_to: detailedAssigned_to,
+      task_status: detailedTask_status,
+    }
+
+    const options = {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(reqBody),
+    }
+
+    const response = await fetch(url, options)
+    const data = await response.json()
+    this.getAllTasks()
+    this.getMyTasks()
+  }
+
+  getAllTasks = async () => {
+    const userDetails = JSON.parse(Cookies.get('user_details_task_management'))
+    const {jwtToken} = userDetails
+
+    const url = 'https://task-management-l5o7.onrender.com/all-tasks/'
+    const options = {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    }
+
+    const response = await fetch(url, options)
+    const data = await response.json()
+
+    this.setState({
+      allTasksList: data.returnResponse,
+    })
   }
 
   getMyTasks = async () => {
@@ -360,6 +474,7 @@ class App extends Component {
       assignedTasks,
       in_progressTasks,
       doneTasks,
+      allTasksList,
       myTasksList,
       detailedTitle,
       detailedDescription,
@@ -411,6 +526,14 @@ class App extends Component {
           getCompleteTaskDetails: this.getCompleteTaskDetails,
           updateTaskStatus: this.updateTaskStatus,
           updateTaskStatusInDB: this.updateTaskStatusInDB,
+          updateTaskDetailsInDB: this.updateTaskDetailsInDB,
+          getAllTasks: this.getAllTasks,
+          updateDetailedTitle: this.updateDetailedTitle,
+          updateDetailedDescription: this.updateDetailedDescription,
+          updateAssignedBy: this.updateAssignedBy,
+          updateAssignedTo: this.updateAssignedTo,
+          updateAssignedDate: this.updateAssignedDate,
+          updateDeadLine: this.updateDeadLine,
         }}
       >
         <Switch>
@@ -431,8 +554,20 @@ class App extends Component {
             path="/tasks"
             render={() => (
               <Tasks
+                tasksList={myTasksList}
                 updateActiveState={this.updateActiveState}
                 getMyTasks={this.getMyTasks}
+              />
+            )}
+          />
+          <ProtectedRoute
+            exact
+            path="/all-tasks"
+            render={() => (
+              <AllTasksPage
+                tasksList={allTasksList}
+                updateActiveState={this.updateActiveState}
+                getAllTasks={this.getAllTasks}
               />
             )}
           />

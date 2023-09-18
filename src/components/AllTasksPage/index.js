@@ -1,11 +1,9 @@
 /* eslint-disable no-else-return */
 /* eslint-disable camelcase */
-/* eslint-disable no-unused-vars */
-import {Component, useState} from 'react'
+import {Component} from 'react'
 import Box from '@mui/material/Box'
-import * as React from 'react'
 import Cookies from 'js-cookie'
-import Popup from 'reactjs-popup'
+
 import 'reactjs-popup/dist/index.css'
 import Paper from '@mui/material/Paper'
 import Table from '@mui/material/Table'
@@ -17,7 +15,6 @@ import TablePagination from '@mui/material/TablePagination'
 import TableRow from '@mui/material/TableRow'
 import Sidebar from '../Sidebar'
 import Navbar from '../NavBar'
-import TaskManagementContext from '../../Context/taskManageContext'
 import DetailedTaskPopup from '../DetailedTaskPopup'
 import DeleteTaskAlertPopup from '../DeleteTaskAlertPopup'
 
@@ -26,19 +23,25 @@ const columns = [
   {
     id: 'assigned_date',
     label: 'Assigned Date',
-    minWidth: 170,
+    minWidth: 120,
     align: 'right',
   },
   {
     id: 'deadline',
     label: 'Last Date',
-    minWidth: 170,
+    minWidth: 120,
     align: 'right',
   },
   {
     id: 'assigned_by',
+    label: 'Assigned By',
+    minWidth: 100,
+    align: 'right',
+  },
+  {
+    id: 'assigned_to',
     label: 'Assigned To',
-    minWidth: 170,
+    minWidth: 100,
     align: 'right',
   },
   {
@@ -61,7 +64,7 @@ const columns = [
   },
 ]
 
-class Tasks extends Component {
+class AllTasksPage extends Component {
   state = {
     page: 0,
     rowsPerPage: 5,
@@ -72,9 +75,9 @@ class Tasks extends Component {
   }
 
   changeActiveTab = () => {
-    const {updateActiveState, getMyTasks} = this.props
-    updateActiveState('TASKS')
-    getMyTasks()
+    const {updateActiveState, getAllTasks} = this.props
+    updateActiveState('ALLTASKS')
+    getAllTasks()
   }
 
   handleChangePage = (event, newPage) => {
@@ -95,8 +98,7 @@ class Tasks extends Component {
     const userDetails = JSON.parse(Cookies.get('user_details_task_management'))
 
     const {loggedInUserDetails} = userDetails
-    const {is_admin, username} = loggedInUserDetails
-
+    const {is_admin} = loggedInUserDetails
     return (
       <Box>
         <Navbar />
@@ -110,11 +112,11 @@ class Tasks extends Component {
           }}
           className="dashboard"
         >
-          <Box sx={{width: '16%', minHeight: '100vh'}}>
+          <Box sx={{width: '16%'}}>
             <Sidebar />
           </Box>
           <Box sx={{padding: 2, width: '84%', paddingTop: 10}}>
-            <h1 style={{color: 'white'}}> Tasks</h1>
+            <h1 style={{color: 'white'}}>All Tasks</h1>
             <Paper sx={{width: '100%', overflow: 'hidden'}}>
               <TableContainer sx={{maxHeight: 440}}>
                 <Table stickyHeader aria-label="sticky table">
@@ -231,4 +233,4 @@ class Tasks extends Component {
   }
 }
 
-export default Tasks
+export default AllTasksPage
