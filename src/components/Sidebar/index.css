@@ -1,0 +1,32 @@
+.side-bar {
+  height: '100vh';
+  padding-top: '50px';
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.side-bar-item {
+  font-size: 20px;
+  width: 90%;
+  color: black;
+  display: flex;
+  text-decoration: none;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+  padding-left: 10px;
+  flex-wrap: wrap;
+  margin: auto;
+  transition: 0.5s;
+}
+
+.active-tab {
+  color: white;
+  background-color: #1976d2;
+  border-radius: 10px;
+  transition: 0.5s;
+}
+
+.side-bar-item-icon {
+  font-size: 30px;
+  padding: 10px;
+}
