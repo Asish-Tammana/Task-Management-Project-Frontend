@@ -75,6 +75,10 @@ class DetailedTaskPopup extends Component {
     const {taskId, givenTasksList} = this.props
     const {editValues, allProfilesList, adminsList} = this.state
 
+    const userDetails = JSON.parse(Cookies.get('user_details_task_management'))
+    const {loggedInUserDetails} = userDetails
+    const {is_admin} = loggedInUserDetails
+
     return (
       <TaskManagementContext.Consumer>
         {value => {
@@ -117,7 +121,7 @@ class DetailedTaskPopup extends Component {
                     <div>
                       <div className="detail-task-head-container">
                         <h3>Task Details</h3>
-                        {!editValues && (
+                        {!editValues && is_admin === 1 && (
                           <EditOutlinedIcon
                             sx={{cursor: 'pointer'}}
                             onClick={this.enableEditing}
