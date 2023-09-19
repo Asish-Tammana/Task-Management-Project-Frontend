@@ -8,4 +8,4 @@ Password: hashed_password4
 Sample User Login Credentials
 
 Username: emily_designer
-Password: hashed_password3
+Password: hashed_password3 
