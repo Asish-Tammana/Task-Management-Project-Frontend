@@ -3,6 +3,7 @@
 import {Component} from 'react'
 import Box from '@mui/material/Box'
 import Cookies from 'js-cookie'
+import {Redirect} from 'react-router-dom'
 
 import 'reactjs-popup/dist/index.css'
 import Paper from '@mui/material/Paper'
@@ -99,6 +100,11 @@ class AllTasksPage extends Component {
 
     const {loggedInUserDetails} = userDetails
     const {is_admin} = loggedInUserDetails
+
+    if (is_admin !== 1) {
+      return <Redirect to="/tasks" />
+    }
+
     return (
       <Box>
         <Navbar />

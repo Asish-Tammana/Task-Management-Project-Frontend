@@ -1,4 +1,7 @@
+/* eslint-disable camelcase */
 import {Component} from 'react'
+import {Redirect} from 'react-router-dom'
+
 import Cookies from 'js-cookie'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
@@ -64,6 +67,15 @@ class ManageUsers extends Component {
   }
 
   render() {
+    const userDetails = JSON.parse(Cookies.get('user_details_task_management'))
+
+    const {loggedInUserDetails} = userDetails
+    const {is_admin} = loggedInUserDetails
+
+    if (is_admin !== 1) {
+      return <Redirect to="/profile" />
+    }
+
     const {allProfilesList} = this.state
 
     return (
