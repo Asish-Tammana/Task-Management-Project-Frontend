@@ -448,7 +448,7 @@ class App extends Component {
     const url = `https://task-management-l5o7.onrender.com/tasks/${taskId}`
 
     const options = {
-      method: 'GET',
+      method: 'DELETE',
       headers: {
         Authorization: `Bearer ${jwtToken}`,
       },
@@ -457,6 +457,7 @@ class App extends Component {
     const response = await fetch(url, options)
     if (response.ok) {
       this.getMyTasks()
+      this.getAllTasks()
     }
   }
 

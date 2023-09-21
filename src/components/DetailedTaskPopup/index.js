@@ -9,8 +9,7 @@ import FormControl from '@mui/material/FormControl'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import TextField from '@mui/material/TextField'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
+
 import TaskManagementContext from '../../Context/taskManageContext'
 
 import 'reactjs-popup/dist/index.css'
