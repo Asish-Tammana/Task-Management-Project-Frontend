@@ -2,8 +2,8 @@ Task-Management-Project-Frontend
 
 Sample Admin Login Credentials:
 
-Username: dave_pm
-Password: hashed_password4
+Username: john_admin
+Password: hashed_password6
 
 Sample User Login Credentials
 
